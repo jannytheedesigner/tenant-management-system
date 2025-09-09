@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\{
     UserController,
     PropertyController,
@@ -13,36 +14,88 @@ use App\Http\Controllers\{
     DashboardController
 };
 
-// Default landing page (can be login or dashboard)
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Dashboard (role-based access inside controller)
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+|
+| These come from Breeze/Jetstream. Leave them as-is.
+| They include: /login, /register, /forgot-password, etc.
+*/
+require __DIR__.'/auth.php';
 
-// Users (Admin only)
-Route::resource('users', UserController::class);
+/*
+|--------------------------------------------------------------------------
+| Dashboard Routes
+|--------------------------------------------------------------------------
+|
+| Role-based dashboards. Protected by auth + verified email.
+*/
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard/admin', [DashboardController::class, 'admin'])
+        ->name('dashboard.admin');
+    Route::get('/dashboard/landlord', [DashboardController::class, 'landlord'])
+        ->name('dashboard.landlord');
+    Route::get('/dashboard/tenant', [DashboardController::class, 'tenant'])
+        ->name('dashboard.tenant');
+});
 
-// Properties & Units (Landlord)
-Route::resource('properties', PropertyController::class);
-Route::resource('units', UnitController::class);
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+|
+| Only accessible to users with role = admin.
+*/
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('users', UserController::class);
+});
 
-// Tenants (Admin / Landlord)
-Route::resource('tenants', TenantController::class);
+/*
+|--------------------------------------------------------------------------
+| Landlord Routes
+|--------------------------------------------------------------------------
+|
+| Accessible to landlords (and possibly admins if needed).
+*/
+Route::middleware(['auth', 'role:landlord,admin'])->group(function () {
+    Route::resource('properties', PropertyController::class);
+    Route::resource('units', UnitController::class);
+    Route::resource('tenants', TenantController::class); // assign tenants
+    Route::resource('leases', LeaseController::class);
+    Route::resource('payments', PaymentController::class);
 
-// Leases
-Route::resource('leases', LeaseController::class);
+    // Custom landlord actions
+    Route::post('payments/{lease}/pay', [PaymentController::class, 'pay'])
+        ->name('payments.pay');
+});
 
-// Payments
-Route::resource('payments', PaymentController::class);
-// custom action to make a payment
-Route::post('payments/{lease}/pay', [PaymentController::class, 'pay'])->name('payments.pay');
+/*
+|--------------------------------------------------------------------------
+| Tenant Routes
+|--------------------------------------------------------------------------
+|
+| Accessible to tenants (and possibly admins if needed).
+*/
+Route::middleware(['auth', 'role:tenant,admin'])->group(function () {
+    Route::resource('maintenance', MaintenanceController::class);
+    Route::post('maintenance/{request}/resolve', [MaintenanceController::class, 'resolve'])
+        ->name('maintenance.resolve');
 
-// Maintenance Requests
-Route::resource('maintenance', MaintenanceController::class);
-// custom action to resolve maintenance request
-Route::post('maintenance/{request}/resolve', [MaintenanceController::class, 'resolve'])->name('maintenance.resolve');
+    Route::resource('notifications', NotificationController::class);
+});
 
-// Notifications
-Route::resource('notifications', NotificationController::class);
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
