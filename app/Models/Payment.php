@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Payment extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['lease_id', 'amount', 'method', 'payment_date', 'status'];
+
+    // A payment belongs to a lease
+    public function lease() {
+        return $this->belongsTo(Lease::class, 'lease_id');
+    }
+}
