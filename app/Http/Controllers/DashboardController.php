@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Lease;
 use App\Models\Payment;
 use App\Models\MaintenanceRequest;
-use App\Http\Controllers\MaintenanceRequestController;
 
 class DashboardController extends Controller
 {
