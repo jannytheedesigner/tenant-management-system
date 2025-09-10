@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto p-6 space-y-8">
         <!-- Welcome Header -->
-        <div class="bg-blue-500 text-white rounded-xl p-12">
+        <div class="bg-[#0CA38D] text-white rounded-xl p-12">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold">Welcome, {{ $user->name }}</h1>
@@ -167,17 +167,17 @@
                 @forelse ($maintenanceRequests as $request)
                     <div class="border rounded-lg p-4 hover:bg-gray-50">
                         <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-medium text-gray-800 truncate">{{ Str::limit($request->description, 30) }}
-                        </h3>
-                        <span
-                            class="px-2.5 py-1 text-xs rounded-full font-medium
+                            <h3 class="font-medium text-gray-800 truncate">{{ Str::limit($request->description, 30) }}
+                            </h3>
+                            <span
+                                class="px-2.5 py-1 text-xs rounded-full font-medium
                             {{ $request->status === 'completed'
                                 ? 'bg-green-100 text-green-800'
                                 : ($request->status === 'in progress'
                                     ? 'bg-blue-100 text-blue-800'
                                     : 'bg-yellow-100 text-yellow-800') }}">
-                            {{ ucfirst($request->status) }}
-                        </span>
+                                {{ ucfirst($request->status) }}
+                            </span>
                         </div>
                         <p class="text-sm text-gray-500 mt-2">{{ $request->description }}</p>
                         <div class="flex items-center mt-4 text-sm text-gray-500">
