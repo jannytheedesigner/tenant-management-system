@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="p-6 space-y-8">
+    <div class="max-w-7xl mx-auto p-6 space-y-8">
         <!-- Welcome Header -->
-        <div class="bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl p-6 shadow-lg">
+        <div class="bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl p-12 shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold">Welcome, {{ $user->name }}</h1>
