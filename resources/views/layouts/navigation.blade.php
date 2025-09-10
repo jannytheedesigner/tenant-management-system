@@ -1,10 +1,11 @@
 <nav x-data="{ open: false }" class="bg-[#053F44] border-b border-gray-100">
+    <div class="w-full h-4 bg-[#0CA38D]"></div>
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+        <div class="flex justify-between">
             <div class="flex">
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center">
+                <div class="shrink-0 flex items-center py-3">
                     <a
                         href="{{ Auth::user()->role === 'admin'
                             ? route('dashboard.admin')
