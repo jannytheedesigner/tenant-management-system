@@ -9,7 +9,7 @@ class Property extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['landlord_id', 'name', 'location', 'description'];
+    protected $fillable = ['landlord_id', 'name', 'location', 'unit', 'description','rent_amount','status'];
 
     // A property belongs to a landlord
     public function landlord() {

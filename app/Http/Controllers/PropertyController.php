@@ -36,11 +36,19 @@ class PropertyController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'location' => 'required|string|max:255',
+            'unit'     => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'rent_amount' => 'nullable|numeric',
+            'status'   => 'nullable|string|max:255',
         ]);
 
         Property::create([
             'name'        => $request->name,
             'location'    => $request->location,
+            'unit'        => $request->unit,
+            'description' => $request->description,
+            'rent_amount' => $request->rent_amount,
+            'status'      => $request->status,
             'landlord_id' => Auth::id(), // 👈 attach logged-in landlord
         ]);
 
@@ -78,10 +86,14 @@ class PropertyController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'location' => 'required|string|max:255',
+            'unit'     => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'rent_amount' => 'nullable|numeric',
+            'status'   => 'nullable|string|max:255',
         ]);
 
         $property = Property::where('landlord_id', Auth::id())->findOrFail($id);
-        $property->update($request->only(['name', 'location']));
+        $property->update($request->only(['name', 'location', 'unit', 'description', 'rent_amount', 'status']));
 
         return redirect()->route('properties.index')
             ->with('success', 'Property updated successfully!');
