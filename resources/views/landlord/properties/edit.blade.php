@@ -39,7 +39,7 @@
                     Cancel
                 </a>
                 <button type="submit" 
-                        class="px-4 py-2 bg-primary-600 text-white rounded-lg shadow hover:bg-primary-700">
+                        class="px-4 py-2 bg-green-900 text-white rounded-lg shadow hover:bg-primary-700">
                     Update
                 </button>
             </div>

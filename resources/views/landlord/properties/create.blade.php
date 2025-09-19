@@ -29,7 +29,7 @@
                 <a href="{{ route('properties.index') }}"
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2">Cancel</a>
                 <button type="submit"
-                    class="px-4 py-2 bg-primary-600 text-white rounded-lg shadow hover:bg-primary-700">Save</button>
+                    class="px-4 py-2 bg-green-900 text-white rounded-lg shadow hover:bg-primary-700">Save</button>
             </div>
         </form>
     </div>

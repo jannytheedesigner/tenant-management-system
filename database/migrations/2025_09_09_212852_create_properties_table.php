@@ -16,10 +16,7 @@ return new class extends Migration
             $table->foreignId('landlord_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->string('location');
-            $table->string('unit')->default(1); // Added unit column
             $table->text('description')->nullable();
-            $table->decimal('rent_amount', 10, 2)->nullable(); // Added rent column
-            $table->string('status')->default('available'); // Added status column
             $table->timestamps();
         });
 
