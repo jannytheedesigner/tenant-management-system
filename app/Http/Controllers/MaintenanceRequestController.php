@@ -22,7 +22,7 @@ class MaintenanceRequestController extends Controller
             ->latest()
             ->get();
 
-        return view('landlord.maintenance.index', compact('requests'));
+        return view('landlord.maintenance-requests.index', compact('requests'));
     }
 
     /**

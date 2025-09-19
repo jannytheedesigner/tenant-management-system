@@ -9,7 +9,7 @@ use App\Http\Controllers\{
     TenantController,
     LeaseController,
     PaymentController,
-    MaintenanceController,
+    MaintenanceRequestController,
     NotificationController,
     DashboardController
 };
@@ -73,6 +73,9 @@ Route::middleware(['auth', 'role:landlord,admin'])->group(function () {
     Route::resource('tenants', TenantController::class); // assign tenants
     Route::resource('leases', LeaseController::class);
     Route::resource('payments', PaymentController::class);
+    Route::resource('maintenance-requests', MaintenanceRequestController::class);
+    Route::get('/maintenace', [MaintenanceRequestController::class, 'index'])
+        ->name('maintenance-requests.index');
 
     // Custom landlord actions
     Route::post('payments/{lease}/pay', [PaymentController::class, 'pay'])

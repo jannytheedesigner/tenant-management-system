@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,27 +14,23 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $units = Unit::with('property')
-            ->whereHas('property', function ($query) {
-                $query->where('landlord_id', Auth::id());
-            })
-            ->get();
-
-        return view('landlord.units.index', compact('units'));
+        $units = \App\Models\Unit::with('property')->latest()->get();
+        $properties = \App\Models\Property::select('id','name')->orderBy('name')->get(); 
+        return view('landlord.units.index', compact('units', 'properties'));
     }
 
     /**
      * Show the form for creating a new unit under a specific property.
      */
-    public function create($propertyId)
+    public function create(Property $property)
     {
-        return view('landlord.units.create', compact('propertyId'));
+        return view('landlord.units.create', compact('property'));
     }
 
     /**
      * Store a newly created unit.
      */
-    public function store(Request $request, $propertyId)
+    public function store(Request $request, Property $property)
     {
         $request->validate([
             'name'   => 'required|string|max:255',

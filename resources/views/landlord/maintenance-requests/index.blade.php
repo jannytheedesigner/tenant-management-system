@@ -23,7 +23,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($maintenanceRequests as $request)
+                    @forelse($requests as $request)
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 font-medium text-gray-800">{{ $request->unit->property->name }}</td>
                             <td class="py-3 font-medium text-gray-800">{{ $request->unit->unit_number }}</td>
