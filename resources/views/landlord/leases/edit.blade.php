@@ -1,17 +1,17 @@
 <x-app-layout></x-app-layout>
     <div class="p-6 max-w-3xl mx-auto">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">
-            Edit Lease - Unit {{ $lease->unit->unit_number }} ({{ $property->name }})
+            Edit Lease
         </h1>
-        <form action="{{ route('leases.update', [$property->id, $lease->id]) }}" method="POST"
+        <form action="{{ route('leases.update', $lease->id) }}" method="POST"
               class="space-y-6 bg-white p-6 rounded-xl shadow">
             @csrf
             @method('PUT')
             <div>
                 <label for="unit_id" class="block text-sm font-medium text-gray-700">Unit</label>
                 <select id="unit_id" name="unit_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm" required>
-                    @foreach($property->units as $unit)
-                        <option value="{{ $unit->id }}" {{ $lease->unit_id == $unit->id ? 'selected' : '' }}>{{ $unit->unit_number }}</option>
+                    @foreach($units as $unit)
+                        <option value="{{ $unit->id }}" {{ $lease->unit_id == $unit->id ? 'selected' : '' }}>{{ $unit->property->name }} - Unit {{ $unit->unit_number }}</option>
                     @endforeach
                 </select>
                 @error('unit_id')

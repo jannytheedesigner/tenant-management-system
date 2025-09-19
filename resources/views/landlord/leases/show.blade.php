@@ -2,9 +2,9 @@
     <div class="p-6 max-w-3xl mx-auto">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-bold text-gray-800">
-                Lease for Unit {{ $lease->unit->unit_number }} - {{ $property->name }}
+                Lease Details
             </h1>
-            <a href="{{ route('leases.index', $property->id) }}"
+            <a href="{{ route('leases.index') }}"
                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
                 Back to Leases
             </a>
@@ -45,9 +45,9 @@
             </div>
         </div>
         <div class="mt-6 flex justify-end space-x-3">
-            <a href="{{ route('leases.edit', [$property->id, $lease->id]) }}"
+            <a href="{{ route('leases.edit', $lease->id) }}"
                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Edit</a>
-            <form action="{{ route('leases.destroy', [$property->id, $lease->id]) }}" method="POST" class="inline">
+            <form action="{{ route('leases.destroy', $lease->id) }}" method="POST" class="inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"

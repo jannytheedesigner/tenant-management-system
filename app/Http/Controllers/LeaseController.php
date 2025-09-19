@@ -3,49 +3,150 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lease;
+use App\Models\Unit;
 use App\Models\Property;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class LeaseController extends Controller
 {
-    public function index($propertyId) {
-        $property = Property::with('units')->findOrFail($propertyId);
-        $leases = Lease::with(['unit', 'tenant'])->whereIn('unit_id', $property->units->pluck('id'))->get();
-        return view('landlord.leases.index', compact('leases', 'property'));
+    /**
+     * Display a listing of all leases belonging to the authenticated landlord's properties.
+     */
+    public function index()
+    {
+        $leases = Lease::with(['unit.property', 'tenant'])
+            ->whereHas('unit.property', function ($query) {
+                $query->where('landlord_id', Auth::id());
+            })
+            ->latest()
+            ->get();
+
+        return view('landlord.leases.index', compact('leases'));
     }
 
-    public function store(Request $request, $propertyId) {
-        $property = Property::with('units')->findOrFail($propertyId);
-        $lease = Lease::create($request->all());
-        return redirect()->route('leases.index', $property->id)->with('success', 'Lease created successfully.');
+    /**
+     * Show the form for creating a new lease.
+     */
+    public function create()
+    {
+        $units = Unit::whereHas('property', function ($query) {
+            $query->where('landlord_id', Auth::id());
+        })->with('property')->get();
+
+        return view('landlord.leases.create', compact('units'));
     }
 
-    public function show($propertyId, $leaseId) {
-        $property = Property::with('units')->findOrFail($propertyId);
-        $lease = Lease::with(['unit', 'tenant'])->findOrFail($leaseId);
-        return view('landlord.leases.show', compact('lease', 'property'));
+    /**
+     * Store a newly created lease in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'unit_id' => [
+                'required',
+                'integer',
+                Rule::exists('units', 'id')->where(function ($query) {
+                    $query->whereHas('property', function ($q) {
+                        $q->where('landlord_id', Auth::id());
+                    });
+                }),
+            ],
+            'tenant_id' => 'required|exists:users,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'rent_amount' => 'required|numeric|min:0',
+            'status' => 'required|in:active,pending,terminated',
+        ]);
+
+        $lease = Lease::create($request->only([
+            'unit_id', 'tenant_id', 'start_date', 
+            'end_date', 'rent_amount', 'status'
+        ]));
+
+        return redirect()->route('leases.index')
+            ->with('success', 'Lease created successfully!');
     }
 
-    public function update(Request $request, $propertyId, $leaseId) {
-        $property = Property::with('units')->findOrFail($propertyId);
-        $lease = Lease::findOrFail($leaseId);
-        $lease->update($request->all());
-        return redirect()->route('leases.index', $property->id)->with('success', 'Lease updated successfully.');
+    /**
+     * Display the specified lease.
+     */
+    public function show($id)
+    {
+        $lease = Lease::with(['unit.property', 'tenant'])
+            ->whereHas('unit.property', function ($query) {
+                $query->where('landlord_id', Auth::id());
+            })
+            ->findOrFail($id);
+
+        return view('landlord.leases.show', compact('lease'));
     }
 
-    public function destroy($propertyId, $leaseId) {
-        $property = Property::findOrFail($propertyId);
-        Lease::destroy($leaseId);
-        return redirect()->route('leases.index', $property->id)->with('success', 'Lease deleted successfully.');
+    /**
+     * Show the form for editing the specified lease.
+     */
+    public function edit($id)
+    {
+        $lease = Lease::whereHas('unit.property', function ($query) {
+            $query->where('landlord_id', Auth::id());
+        })->findOrFail($id);
+
+        $units = Unit::whereHas('property', function ($query) {
+            $query->where('landlord_id', Auth::id());
+        })->with('property')->get();
+
+        return view('landlord.leases.edit', compact('lease', 'units'));
     }
-    public function create($propertyId) {
-        $property = Property::with('units')->findOrFail($propertyId);
-        return view('landlord.leases.create', compact('property'));
+
+    /**
+     * Update the specified lease in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $lease = Lease::whereHas('unit.property', function ($query) {
+            $query->where('landlord_id', Auth::id());
+        })->findOrFail($id);
+
+        $request->validate([
+            'unit_id' => [
+                'required',
+                'integer',
+                Rule::exists('units', 'id')->where(function ($query) {
+                    $query->whereHas('property', function ($q) {
+                        $q->where('landlord_id', Auth::id());
+                    });
+                }),
+            ],
+            'tenant_id' => 'required|exists:users,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'rent_amount' => 'required|numeric|min:0',
+            'status' => 'required|in:active,pending,terminated',
+        ]);
+
+        $lease->update($request->only([
+            'unit_id', 'tenant_id', 'start_date', 
+            'end_date', 'rent_amount', 'status'
+        ]));
+
+        return redirect()->route('leases.index')
+            ->with('success', 'Lease updated successfully!');
     }
-    public function edit($propertyId, $leaseId) {
-        $property = Property::with('units')->findOrFail($propertyId);
-        $lease = Lease::findOrFail($leaseId);
-        return view('landlord.leases.edit', compact('lease', 'property'));
+
+    /**
+     * Remove the specified lease from storage.
+     */
+    public function destroy($id)
+    {
+        $lease = Lease::whereHas('unit.property', function ($query) {
+            $query->where('landlord_id', Auth::id());
+        })->findOrFail($id);
+
+        $lease->delete();
+
+        return redirect()->route('leases.index')
+            ->with('success', 'Lease deleted successfully!');
     }
 }
 

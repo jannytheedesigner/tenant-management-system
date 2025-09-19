@@ -48,13 +48,13 @@
                         <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
                             {{ __('Payments') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('maintenance.index')" :active="request()->routeIs('maintenance.*')">
+                        <x-nav-link :href="route('maintenance-requests.index')" :active="request()->routeIs('maintenance-requests.*')">
                             {{ __('Maintenance Requests') }}
                         </x-nav-link>
                     @endif
 
                     @if(Auth::user()->role === 'tenant')
-                        <x-nav-link :href="route('maintenance.index')" :active="request()->routeIs('maintenance.*')">
+                        <x-nav-link :href="route('maintenance-requests.index')" :active="request()->routeIs('maintenance-requests.*')">
                             {{ __('Maintenance') }}
                         </x-nav-link>
                         <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
